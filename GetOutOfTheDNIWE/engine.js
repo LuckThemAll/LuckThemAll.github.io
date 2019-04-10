@@ -79,6 +79,7 @@ $(document).ready(function(){
 	};
 
 	boom_all_dynamites = function(){
+		console.log("BOOM PRESSED");
 		if (is_active_DETANATE_ALL){
 			for (let i = 0; i < FIELD_HEIGHT; i++)
 				for (let j = 0; j < FIELD_WIDTH; j++) {
@@ -90,10 +91,49 @@ $(document).ready(function(){
 						}, DETANATE_ALL_COOLDOWN));
 					}
 				}
+			repaint_field(playing_field);
 		}
 	};
 			
-	move_to = function(dx, dy, f=true) {
+	move_to = function(dx, dy, f=true, move_anyway=false) {
+		function go(){
+			if (game_over) return;
+
+			console.log('move to: ' + dx + ' ' + dy);
+
+			let x = engine.hero_coords[0], y = engine.hero_coords[1];
+
+			if (dy < 0 && playing_field[y + 1][x] in BLOCKS.ABSTRACT) // нельзя отпрыгнуть от воздуха
+				return;
+
+			if (playing_field[y + dy][x + dx] in BLOCKS.MOVE) // если на пути персонажа блок или динамит или бочка пытаемся сдвинуть
+				move_block(x + dx, y + dy, dx);
+
+			if (playing_field[y + dy][x + dx] in BLOCKS.SOLID) // если на пути персонажа несдвигаемый блок
+				return;
+
+			if (y < HOLE_BORDER)
+				playing_field[y][x] = 'SKY';
+			else
+				playing_field[y][x] = 'HOLE';
+
+			engine.hero_coords[0] += dx;
+			engine.hero_coords[1] += dy;
+
+			playing_field[y + dy][x + dx] = 'HERO';
+
+			repaint_field(playing_field);
+
+			drop_hero();
+
+			if (engine.hero_coords[0] === 1 || engine.hero_coords[0] === FIELD_WIDTH - 2){ // условия победы
+				stop_game('win');
+			}
+		}
+		if (move_anyway){
+			go()
+		}
+		else
 		if (dx != 0 || dy != 1){
 			if (!CAN_GO) return;
 
@@ -107,40 +147,7 @@ $(document).ready(function(){
 				}, INTERVAL));
 			}
 		}
-		if (game_over) return;
-
-		console.log('move to: ' + dx + ' ' + dy);
-
-		let x = engine.hero_coords[0], y = engine.hero_coords[1];
-
-		if (dy < 0 && playing_field[y + 1][x] in BLOCKS.ABSTRACT) // нельзя отпрыгнуть от воздуха
-			return;
-
-		if (playing_field[y + dy][x + dx] in BLOCKS.MOVE) // если на пути персонажа блок или динамит или бочка пытаемся сдвинуть
-				move_block(x + dx, y + dy, dx);
-		
-		if (playing_field[y + dy][x + dx] in BLOCKS.SOLID) // если на пути персонажа несдвигаемый блок
-			return;
-		
-		if (y < HOLE_BORDER)
-			playing_field[y][x] = 'SKY';
-		else
-			playing_field[y][x] = 'HOLE';
-
-		engine.hero_coords[0] += dx;
-		engine.hero_coords[1] += dy;
-		
-		playing_field[y + dy][x + dx] = 'HERO';
-		
-		repaint_field(playing_field);
-		
-		drop_hero();
-
-		if (engine.hero_coords[0] === 1 || engine.hero_coords[0] === FIELD_WIDTH - 2){ // условия победы
-			stop_game('win');
-		}
-		
-		
+		go();
 	};
 	
 	Engine.prototype.generate_playing_field = function(){
@@ -303,7 +310,7 @@ $(document).ready(function(){
 			},BOOM_ANIGILETE/* + BOOM_DELAY*/));
 		}
 		if (playing_field[i][j] == 'S_DYNAMITE'){
-			if (playing_field[i][j + 1] == 'HERO' || playing_field[i][j - 1] == 'HERO' ||
+			if (playing_field[i][j + 1] == 'HERO' || playing_field[i][j - 1] == 'HERO' || //todo проверить на наличие персонажа снизу
 				playing_field[i + 1][j] == 'HERO' || playing_field[i - 1][j] == 'HERO')
 					timeouts_id.push(setTimeout(function(){
 						stop_game('loose');
@@ -323,6 +330,7 @@ $(document).ready(function(){
 			set_boom_anigilete(i, j);
 		}
 		drop_hero();
+		repaint_field(playing_field);
 	}
 
 
@@ -359,7 +367,7 @@ $(document).ready(function(){
 			for (let j = WALL_WIDTH; j < FIELD_WIDTH - WALL_WIDTH - 1; j++)
 			    if ((j % 2) == 0) {
 			        if (playing_field[floor_index][j] == 'HERO')
-			            move_to(0, -1);
+			            move_to(0, -1, true, true);
 			        playing_field[floor_index][j] = 'S_DYNAMITE';
 					timeouts_id.push(setTimeout(function(){detanete(floor_index, j)}, BOOM_DELAY));
 			    }
