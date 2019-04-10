@@ -20,6 +20,8 @@ $(document).ready(function(){
 	var IS_ARCADE = false;
 	var DYNAMITE_SPAWNED = false;
 	var block_count = 0;
+	var CAN_GO = true;
+	var INTERVAL = BLOCK_SPAWN_SPEED;
 
 
 	var Engine = function(){
@@ -74,9 +76,21 @@ $(document).ready(function(){
 			}
 	};
 			
-	move_to = function(dx, dy) {
+	move_to = function(dx, dy, f=true) {
+		if (dx != 0 || dy != 1){
+			if (!CAN_GO) return;
+
+			if (IS_ARCADE && CAN_GO && f){
+				CAN_GO = false;
+				timeouts_id.push(setTimeout(function(){
+					CAN_GO = true;
+					INTERVAL -= 10;
+					console.log("interval: ", INTERVAL);
+				}, INTERVAL));
+			}
+		}
 		if (game_over) return;
-		
+
 		console.log('move to: ' + dx + ' ' + dy);
 
 		let x = engine.hero_coords[0], y = engine.hero_coords[1];
@@ -390,6 +404,7 @@ $(document).ready(function(){
 				BARREL_CHANCE = 20;
 				DYNAMITE_CHANCE = 15;
 				BLOCK_SPAWN_SPEED = 800;
+				INTERVAL = BLOCK_SPAWN_SPEED;
 				BLOCK_FALLING_SPEED = 400;
 				BOOM_ANIGILETE = 700;
 				FIELD_WIDTH = 15;
