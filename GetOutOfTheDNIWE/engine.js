@@ -273,14 +273,20 @@ $(document).ready(function(){
 		if (playing_field[i][j] == 'S_DYNAMITE'){
 			if (playing_field[i][j + 1] == 'HERO' || playing_field[i][j - 1] == 'HERO' ||
 				playing_field[i + 1][j] == 'HERO' || playing_field[i - 1][j] == 'HERO')
-				timeouts_id.push(setTimeout(function(){stop_game('loose')}, 180));
+					timeouts_id.push(setTimeout(function(){
+						stop_game('loose');
+						set_boom(i, j);
+						}, 180));
 			set_boom(i, j);
 			set_boom_anigilete(i, j);
 		}
 		else{
 			if (playing_field[i][j + 1] == 'HERO' || playing_field[i][j - 1] == 'HERO' ||
 				playing_field[i + 1][j] == 'HERO' || playing_field[i - 1][j] == 'HERO')
-					timeouts_id.push(setTimeout(function(){stop_game('loose')}, 180));
+					timeouts_id.push(setTimeout(function(){
+						stop_game('loose');
+						set_boom(i, j);
+						}, 180));
 			set_boom(i, j);
 			set_boom_anigilete(i, j);
 		}
