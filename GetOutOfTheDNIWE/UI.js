@@ -1,6 +1,7 @@
 "use strict"
 
 console.log('UI loading');
+var boom_all_dynamites;
 var move_to;
 var engine;
 
@@ -26,6 +27,7 @@ $(document).ready(function(){
 			case (87): { move_to(0, -1); break; }    // �����
 			case (105): { move_to(0, -1, false); move_to(1, 0); break; }    // �����-������
 			case (69): { move_to(0, -1, false); move_to(1, 0); break; }    // �����-������
+			case (82): { boom_all_dynamites(); break; }    // ditanate all
 		}
 		//console.log("keycode: " + keycode);
 	}	

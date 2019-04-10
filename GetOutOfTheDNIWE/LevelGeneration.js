@@ -47,6 +47,10 @@ var create_field = function(playing_field){
 			});
 		}
 	}
+	$( '#id_skills_bar').append( '<div id="' + id +'" class="cell">');
+	$( '#id_skills_bar').append( '<div id="' + id +'" class="cell">');
+	$( '#id_skills_bar').append( '<div id="' + id +'" class="cell">');
+
 	console.log('creating field sucsesfull');
 };
 

@@ -22,6 +22,8 @@ $(document).ready(function(){
 	var block_count = 0;
 	var CAN_GO = true;
 	var INTERVAL = BLOCK_SPAWN_SPEED;
+	var DETANATE_ALL_COOLDOWN = 10000;
+	var is_active_DETANATE_ALL = true;
 
 
 	var Engine = function(){
@@ -75,6 +77,21 @@ $(document).ready(function(){
 				return;
 			}
 	};
+
+	boom_all_dynamites = function(){
+		if (is_active_DETANATE_ALL){
+			for (let i = 0; i < FIELD_HEIGHT; i++)
+				for (let j = 0; j < FIELD_WIDTH; j++) {
+					if (playing_field[i][j] == 'DYNAMITE' || playing_field[i][j] == 'S_DYNAMITE'){
+						detanete(i, j);
+						is_active_DETANATE_ALL = false;
+						timeouts_id.push(setTimeout(function() {
+							is_active_DETANATE_ALL = true;
+						}, DETANATE_ALL_COOLDOWN));
+					}
+				}
+		}
+	};
 			
 	move_to = function(dx, dy, f=true) {
 		if (dx != 0 || dy != 1){
@@ -84,7 +101,8 @@ $(document).ready(function(){
 				CAN_GO = false;
 				timeouts_id.push(setTimeout(function(){
 					CAN_GO = true;
-					INTERVAL -= 10;
+					if (INTERVAL > 250)
+						INTERVAL -= 10;
 					console.log("interval: ", INTERVAL);
 				}, INTERVAL));
 			}
