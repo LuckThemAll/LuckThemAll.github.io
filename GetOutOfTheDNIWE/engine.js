@@ -428,6 +428,7 @@ $(document).ready(function(){
 				FIELD_WIDTH = 15;
 				FIELD_HEIGHT = 20;
 				BOOM_DELAY = 500;
+				is_active_DETANATE_ALL = true;
 				SPAWN_COORD_Y = (FIELD_HEIGHT - 2);
 				$('#block_counter').show();
 				break; 
